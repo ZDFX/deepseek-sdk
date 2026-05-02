@@ -44,7 +44,7 @@ function mapStopReason(reason: string): string {
   }
 }
 
-async function* toEventStream(
+export async function* toEventStream(
   chunks: AsyncGenerator<ChatCompletionChunk>,
   requestModel: string,
   prefix?: PrefixInput,
@@ -208,7 +208,7 @@ async function* toEventStream(
   yield { type: 'message_stop' }
 }
 
-function extractPrefix(messages: ChatMessage[]): PrefixInput | undefined {
+export function extractPrefix(messages: ChatMessage[]): PrefixInput | undefined {
   const last = messages.at(-1)
   if (last?.role === 'assistant' && last.prefix === true) {
     return {

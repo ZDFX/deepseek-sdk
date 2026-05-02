@@ -46,6 +46,7 @@ export type {
 } from './fim-completion'
 
 export type { Model, ListModelsResponse } from './models'
+export type { BalanceInfo, BalanceResponse } from './user'
 
 export type {
   StreamEvent,

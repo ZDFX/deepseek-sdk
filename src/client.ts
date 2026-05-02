@@ -1,6 +1,16 @@
+import { Models } from './resources/models'
+import { FIM } from './resources/fim'
+import { Chat } from './resources/chat'
+import { User } from './resources/user'
+
 export class DeepSeekClient {
   private apiKey: string
   private baseUrl: string
+
+  readonly models = new Models(this)
+  readonly fim = new FIM(this)
+  readonly user = new User(this)
+  readonly chat = new Chat(this)
 
   constructor(config: { apiKey: string; baseUrl?: string }) {
     this.apiKey = config.apiKey
