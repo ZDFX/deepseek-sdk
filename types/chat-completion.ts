@@ -70,6 +70,8 @@ export type ChatMessage = SystemMessage | UserMessage | AssistantMessage | ToolM
 export interface ToolCall {
   /** tool 调用的 ID */
   id: string
+  /** tool 调用的索引 */
+  index?: number
   /** tool 的类型。目前仅支持 `function` */
   type: 'function'
   function: {
