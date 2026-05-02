@@ -1,0 +1,5 @@
+export { DeepSeekClient } from './client.js'
+export { listModels } from './models.js'
+export { fimCompletion } from './fim.js'
+export { chatCompletion } from './chat-completion.js'
+export type * from '../types/index.js'
