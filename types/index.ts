@@ -6,7 +6,7 @@ export type {
   PromptTokensDetails,
   Usage,
   Stop,
-} from './common.js'
+} from './common'
 
 export type {
   SystemMessage,
@@ -33,7 +33,7 @@ export type {
   DeltaMessage,
   ChoiceDelta,
   ChatCompletionChunk,
-} from './chat-completion.js'
+} from './chat-completion'
 
 export type {
   FIMCompletionRequest,
@@ -43,9 +43,9 @@ export type {
   FIMCompletionResponse,
   FIMChoiceDelta,
   FIMCompletionChunk,
-} from './fim-completion.js'
+} from './fim-completion'
 
-export type { Model, ListModelsResponse } from './models.js'
+export type { Model, ListModelsResponse } from './models'
 
 export type {
   AnthropicStreamEvent,
@@ -57,4 +57,4 @@ export type {
   ContentBlockStopEvent,
   MessageDeltaEvent,
   MessageStopEvent,
-} from './anthropic.js'
+} from './anthropic'

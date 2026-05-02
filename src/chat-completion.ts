@@ -1,10 +1,10 @@
-import { DeepSeekClient } from './client.js'
+import { DeepSeekClient } from './client'
 import type {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatCompletionChunk,
   ChatMessage,
-} from '../types/chat-completion.js'
+} from '../types/chat-completion'
 
 // ============================================================
 // Messages 预处理

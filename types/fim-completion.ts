@@ -1,4 +1,4 @@
-import type { StreamOptions, Usage, Stop } from './common.js'
+import type { StreamOptions, Usage, Stop } from './common'
 
 // ============================================================
 // Request

@@ -1,18 +1,46 @@
 {
-  "name": "deepdeek-sdk",
+  "name": "deepseek-sdk",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Unofficial DeepSeek API SDK for JavaScript / TypeScript",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
   },
-  "keywords": [],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "deepseek",
+    "api",
+    "sdk",
+    "chat",
+    "completion",
+    "fim",
+    "ai"
+  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.33.2",
   "devDependencies": {
     "@types/node": "^25.6.0",
+    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   }

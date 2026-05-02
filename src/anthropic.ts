@@ -1,14 +1,14 @@
-import { DeepSeekClient } from './client.js'
+import { DeepSeekClient } from './client'
 import type {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatCompletionChunk,
   ChatMessage,
-} from '../types/chat-completion.js'
+} from '../types/chat-completion'
 import type {
   AnthropicStreamEvent,
-} from '../types/anthropic.js'
-import { preprocessMessages, hasPrefix } from './chat-completion.js'
+} from '../types/anthropic'
+import { preprocessMessages, hasPrefix } from './chat-completion'
 
 // ============================================================
 // 状态机适配器：DeepSeek 流 → Anthropic 事件

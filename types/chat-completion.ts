@@ -1,4 +1,4 @@
-import type { LogProbContent, StreamOptions, Usage, Stop } from './common.js'
+import type { LogProbContent, StreamOptions, Usage, Stop } from './common'
 
 // ============================================================
 // Messages（请求体中的 messages 字段）

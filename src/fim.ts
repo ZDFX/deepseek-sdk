@@ -1,5 +1,5 @@
-import { DeepSeekClient } from './client.js'
-import type { FIMCompletionRequest, FIMCompletionResponse, FIMCompletionChunk } from '../types/fim-completion.js'
+import { DeepSeekClient } from './client'
+import type { FIMCompletionRequest, FIMCompletionResponse, FIMCompletionChunk } from '../types/fim-completion'
 
 export function fimCompletion(
   client: DeepSeekClient,
