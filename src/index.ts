@@ -1,6 +1,2 @@
 export { DeepSeekClient } from './client'
-export { listModels } from './models'
-export { fimCompletion } from './fim'
-export { chatCompletion } from './chat-completion'
-export { streamChatCompletion } from './event-stream'
 export type * from '../types/index'

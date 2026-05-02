@@ -1,14 +1,10 @@
-import { DeepSeekClient } from './client'
 import type {
-  ChatCompletionRequest,
-  ChatCompletionResponse,
   ChatCompletionChunk,
   ChatMessage,
-} from '../types/chat-completion'
+} from '../../types/chat-completion'
 import type {
   StreamEvent,
-} from '../types/event-stream'
-import { preprocessMessages, hasPrefix } from './chat-completion'
+} from '../../types/event-stream'
 
 // ============================================================
 // 状态机：DeepSeek 原始 chunk → 结构化事件（按 type 分发）
@@ -219,33 +215,3 @@ export function extractPrefix(messages: ChatMessage[]): PrefixInput | undefined 
   return undefined
 }
 
-// ============================================================
-// 结构化流式入口
-// ============================================================
-
-export function streamChatCompletion(
-  client: DeepSeekClient,
-  request: ChatCompletionRequest & { stream?: false | null },
-): Promise<ChatCompletionResponse>
-
-export function streamChatCompletion(
-  client: DeepSeekClient,
-  request: ChatCompletionRequest & { stream: true },
-): AsyncGenerator<StreamEvent>
-
-export function streamChatCompletion(
-  client: DeepSeekClient,
-  request: ChatCompletionRequest,
-): Promise<ChatCompletionResponse> | AsyncGenerator<StreamEvent> {
-  const messages = preprocessMessages(request.messages, request.thinking)
-  const body = { ...request, messages }
-  const path = hasPrefix(request.messages) ? '/beta/chat/completions' : '/chat/completions'
-
-  if (!request.stream) {
-    return client.post<ChatCompletionResponse>(path, body)
-  }
-
-  const prefix = extractPrefix(request.messages)
-  const chunks = client.postStream<ChatCompletionChunk>(path, body)
-  return toEventStream(chunks, request.model, prefix)
-}

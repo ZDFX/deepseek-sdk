@@ -1,10 +1,4 @@
-import { DeepSeekClient } from './client'
-import type {
-  ChatCompletionRequest,
-  ChatCompletionResponse,
-  ChatCompletionChunk,
-  ChatMessage,
-} from '../types/chat-completion'
+import type { ChatMessage } from '../../types/chat-completion'
 
 // ============================================================
 // Messages 预处理
@@ -28,7 +22,7 @@ export function hasPrefix(messages: ChatMessage[]): boolean {
  */
 export function preprocessMessages(
   messages: ChatMessage[],
-  thinking: ChatCompletionRequest['thinking'],
+  thinking: { type?: string } | null | undefined,
 ): ChatMessage[] {
   // prefix 参数验证
   for (const msg of messages) {
@@ -53,30 +47,4 @@ export function preprocessMessages(
     })
   }
   return messages
-}
-
-// ============================================================
-// DeepSeek 原生 API
-// ============================================================
-
-export function chatCompletion(
-  client: DeepSeekClient,
-  request: ChatCompletionRequest & { stream?: false | null },
-): Promise<ChatCompletionResponse>
-export function chatCompletion(
-  client: DeepSeekClient,
-  request: ChatCompletionRequest & { stream: true },
-): AsyncGenerator<ChatCompletionChunk>
-export function chatCompletion(
-  client: DeepSeekClient,
-  request: ChatCompletionRequest,
-): Promise<ChatCompletionResponse> | AsyncGenerator<ChatCompletionChunk> {
-  const messages = preprocessMessages(request.messages, request.thinking)
-  const body = { ...request, messages }
-  const path = hasPrefix(request.messages) ? '/beta/chat/completions' : '/chat/completions'
-
-  if (request.stream) {
-    return client.postStream<ChatCompletionChunk>(path, body)
-  }
-  return client.post<ChatCompletionResponse>(path, body)
 }
