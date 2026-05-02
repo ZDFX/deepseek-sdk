@@ -46,3 +46,15 @@ export type {
 } from './fim-completion.js'
 
 export type { Model, ListModelsResponse } from './models.js'
+
+export type {
+  AnthropicStreamEvent,
+  MessageStartEvent,
+  ContentBlockStartEvent,
+  ContentBlockStart,
+  ContentBlockDeltaEvent,
+  ContentBlockDelta,
+  ContentBlockStopEvent,
+  MessageDeltaEvent,
+  MessageStopEvent,
+} from './anthropic.js'
