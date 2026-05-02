@@ -48,7 +48,7 @@ export type {
 export type { Model, ListModelsResponse } from './models'
 
 export type {
-  AnthropicStreamEvent,
+  StreamEvent,
   MessageStartEvent,
   ContentBlockStartEvent,
   ContentBlockStart,
@@ -57,4 +57,4 @@ export type {
   ContentBlockStopEvent,
   MessageDeltaEvent,
   MessageStopEvent,
-} from './anthropic'
+} from './event-stream'

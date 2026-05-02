@@ -6,12 +6,12 @@ import type {
   ChatMessage,
 } from '../types/chat-completion'
 import type {
-  AnthropicStreamEvent,
-} from '../types/anthropic'
+  StreamEvent,
+} from '../types/event-stream'
 import { preprocessMessages, hasPrefix } from './chat-completion'
 
 // ============================================================
-// 状态机适配器：DeepSeek 流 → Anthropic 事件
+// 状态机：DeepSeek 原始 chunk → 结构化事件（按 type 分发）
 // ============================================================
 
 type BlockType = 'thinking' | 'text' | 'tool_use'
@@ -44,18 +44,17 @@ function mapStopReason(reason: string): string {
   }
 }
 
-async function* toAnthropicStream(
+async function* toEventStream(
   chunks: AsyncGenerator<ChatCompletionChunk>,
   requestModel: string,
   prefix?: PrefixInput,
-): AsyncGenerator<AnthropicStreamEvent> {
+): AsyncGenerator<StreamEvent> {
   let state: State = { phase: 'init' }
   let blockIndex = 0
   let messageId = ''
   let model = requestModel
   let finishReason: string | null = null
   let outputTokens = 0
-  let prefixReasoningSent = false
   let prefixContentSent = false
 
   const toolStates = new Map<number, ToolCallState>()
@@ -92,7 +91,6 @@ async function* toAnthropicStream(
           index: blockIndex,
           delta: { type: 'thinking_delta', thinking: prefix.reasoning_content },
         }
-        prefixReasoningSent = true
       }
     }
 
@@ -222,23 +220,23 @@ function extractPrefix(messages: ChatMessage[]): PrefixInput | undefined {
 }
 
 // ============================================================
-// Anthropic 风格流式入口
+// 结构化流式入口
 // ============================================================
 
-export function chatCompletionAnthropic(
+export function streamChatCompletion(
   client: DeepSeekClient,
   request: ChatCompletionRequest & { stream?: false | null },
 ): Promise<ChatCompletionResponse>
 
-export function chatCompletionAnthropic(
+export function streamChatCompletion(
   client: DeepSeekClient,
   request: ChatCompletionRequest & { stream: true },
-): AsyncGenerator<AnthropicStreamEvent>
+): AsyncGenerator<StreamEvent>
 
-export function chatCompletionAnthropic(
+export function streamChatCompletion(
   client: DeepSeekClient,
   request: ChatCompletionRequest,
-): Promise<ChatCompletionResponse> | AsyncGenerator<AnthropicStreamEvent> {
+): Promise<ChatCompletionResponse> | AsyncGenerator<StreamEvent> {
   const messages = preprocessMessages(request.messages, request.thinking)
   const body = { ...request, messages }
   const path = hasPrefix(request.messages) ? '/beta/chat/completions' : '/chat/completions'
@@ -249,5 +247,5 @@ export function chatCompletionAnthropic(
 
   const prefix = extractPrefix(request.messages)
   const chunks = client.postStream<ChatCompletionChunk>(path, body)
-  return toAnthropicStream(chunks, request.model, prefix)
+  return toEventStream(chunks, request.model, prefix)
 }

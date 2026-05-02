@@ -1,8 +1,8 @@
 // ============================================================
-// Anthropic 风格流式事件类型
+// 结构化流式事件 —— 将流式 chunks 转为带 type 的事件，便于按事件类型分发处理
 // ============================================================
 
-export type AnthropicStreamEvent =
+export type StreamEvent =
   | MessageStartEvent
   | ContentBlockStartEvent
   | ContentBlockDeltaEvent
