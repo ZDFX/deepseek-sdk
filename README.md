@@ -3,13 +3,13 @@
 Unofficial DeepSeek API SDK for JavaScript / TypeScript.
 
 ```bash
-npm install @zdfx/deepseek-sdk
+npm install @hjning/deepseek-sdk
 ```
 
 ## Quick Start
 
 ```ts
-import { DeepSeekClient } from '@zdfx/deepseek-sdk'
+import { DeepSeekClient } from '@hjning/deepseek-sdk'
 
 const client = new DeepSeekClient({ apiKey: 'sk-...' })
 
