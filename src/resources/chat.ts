@@ -2,7 +2,7 @@ import type { DeepSeekClient } from '../client'
 import type { ChatCompletionRequest, ChatCompletionResponse, ChatCompletionChunk } from '../../types/chat-completion'
 import type { StreamEvent } from '../../types/event-stream'
 import { preprocessMessages, hasPrefix } from '../core/preprocess'
-import { toEventStream, extractPrefix } from '../core/stream-adapter'
+import { toEventStream } from '../core/stream-adapter'
 
 export class Chat {
   readonly stream: ChatStream
@@ -39,7 +39,6 @@ export class ChatStream {
     const path = hasPrefix(request.messages) ? '/beta/chat/completions' : '/chat/completions'
 
     const chunks = this.client.postStream<ChatCompletionChunk>(path, body)
-    const prefix = extractPrefix(request.messages)
-    yield* toEventStream(chunks, request.model, prefix)
+    yield* toEventStream(chunks, request.model)
   }
 }

@@ -40,7 +40,7 @@ export interface UserMessage {
 export interface AssistantMessage {
   /** 该消息的发起角色，其值为 `assistant` */
   role: 'assistant'
-  /** assistant 消息的内容 */
+  /** assistant 消息的内容。使用 prefix 模式时，如果设置了 `reasoning_content` 让模型续写推理而非正文，则 `content` 必须设为空字符串 `""` */
   content: string | null
   /** 参与者的名称，为模型提供信息以区分相同角色的参与者 */
   name?: string
