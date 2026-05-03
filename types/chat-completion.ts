@@ -128,10 +128,16 @@ export type ToolChoice = ToolChoiceString | NamedToolChoice
 // Thinking
 // ============================================================
 
-export interface Thinking {
-  /** `enabled` 使用思考模式，`disabled` 使用非思考模式，默认 `enabled` */
-  type: 'enabled' | 'disabled'
+export interface ThinkingEnabled {
+  type: 'enabled'
 }
+
+export interface ThinkingDisabled {
+  type: 'disabled'
+}
+
+/** `enabled` 使用思考模式，`disabled` 使用非思考模式，默认 `enabled` */
+export type Thinking = ThinkingEnabled | ThinkingDisabled
 
 // ============================================================
 // Response Format
@@ -146,15 +152,11 @@ export interface ResponseFormat {
 // Request
 // ============================================================
 
-export interface ChatCompletionRequest {
+type ChatCompletionRequestCommon = {
   /** 对话的消息列表，长度 >= 1 */
   messages: ChatMessage[]
   /** 使用的模型 ID：`deepseek-v4-flash` 或 `deepseek-v4-pro` */
   model: 'deepseek-v4-flash' | 'deepseek-v4-pro'
-  /** 控制思考模式与非思考模式的转换，默认 `{ type: "enabled" }` */
-  thinking?: Thinking | null
-  /** 控制模型的推理强度。普通请求默认 `high`，复杂 Agent 请求自动设为 `max` */
-  reasoning_effort?: 'high' | 'max'
   /** 介于 -2.0 和 2.0 之间的数字。正值惩罚已出现 token 的频率，降低重复，默认 `0` */
   frequency_penalty?: number | null
   /** 限制生成 completion 的最大 token 数。输入+输出总长受上下文长度限制 */
@@ -182,6 +184,22 @@ export interface ChatCompletionRequest {
   /** 指定每个输出位置返回 top N 的 token（0~20）。指定时 logprobs 必须为 true */
   top_logprobs?: number | null
 }
+
+/**
+ * - `thinking.type === 'disabled'` 时不允许设置 `reasoning_effort`
+ * - 其他情况（未传、`null`、`{ type: 'enabled' }`）允许设置 `reasoning_effort`
+ */
+export type ChatCompletionRequest =
+  | (ChatCompletionRequestCommon & {
+      /** 控制思考模式与非思考模式的转换，默认 `{ type: "enabled" }` */
+      thinking?: ThinkingEnabled | null
+      /** 控制模型的推理强度。普通请求默认 `high`，复杂 Agent 请求自动设为 `max` */
+      reasoning_effort?: 'high' | 'max'
+    })
+  | (ChatCompletionRequestCommon & {
+      /** 控制思考模式与非思考模式的转换 */
+      thinking: ThinkingDisabled
+    })
 
 // ============================================================
 // Response — 非流式

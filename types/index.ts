@@ -23,6 +23,8 @@ export type {
   ToolChoiceString,
   NamedToolChoice,
   ToolChoice,
+  ThinkingEnabled,
+  ThinkingDisabled,
   Thinking,
   ResponseFormat,
   ChatCompletionRequest,
