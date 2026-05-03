@@ -211,6 +211,8 @@ await client.chat.create({
 })
 ```
 
+> **注意**：Prefix 模式下消息历史中不能包含 tool call / tool result，API 会返回 `Function call should not be used with prefix`。
+
 ## FIM Completion (Beta)
 
 Fill-In-the-Middle 补全：
