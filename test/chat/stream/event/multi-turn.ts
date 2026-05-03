@@ -19,18 +19,18 @@ async function chatTurn(messages: ChatMessage[]) {
   })) {
     switch (e.type) {
       case 'reasoning_delta':
-        reasoning += e.reasoning
+        reasoning += e.text
         break
-      case 'content_delta':
+      case 'answer_delta':
         content += e.text
         break
-      case 'tool_call_start':
+      case 'tool_call_name':
         toolCalls.push({ id: e.id, name: e.name, args: '' })
         break
-      case 'tool_call_delta':
+      case 'tool_call_argument':
         toolCalls[toolCalls.length - 1]!.args += e.partial_json
         break
-      case 'message_delta':
+      case 'finish_reason':
         stopReason = e.stop_reason
         break
     }

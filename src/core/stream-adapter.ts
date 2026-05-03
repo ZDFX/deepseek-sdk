@@ -1,20 +1,25 @@
 import type { ChatCompletionChunk } from '../../types/chat-completion'
 import type { StreamEvent } from '../../types/event-stream'
+import type { Usage } from '../../types/common'
 
 export async function* toEventStream(
   chunks: AsyncGenerator<ChatCompletionChunk>,
   requestModel: string,
 ): AsyncGenerator<StreamEvent> {
-  let reasoning = false, text = false, tools = false, started = false
-  let activeTool = -1, finishReason: string | null = null, outputTokens = 0
-  const toolStates = new Map<number, { id: string; name: string; sent: string }>()
+  let reasoning = false, answer = false, tools = false, started = false
+  let finishReason: string | null = null, usage: Usage | null = null
+  const seenTools = new Set<number>()
 
   for await (const chunk of chunks) {
-    if (!started) { started = true; yield { type: 'message_start', id: chunk.id, model: chunk.model || requestModel } }
+    if (!started) {
+      started = true
+      yield { type: 'message_start', id: chunk.id, model: chunk.model || requestModel, created: chunk.created, system_fingerprint: chunk.system_fingerprint }
+    }
     const d = chunk.choices[0]?.delta
+    const lp = chunk.choices[0]?.logprobs
     const fr = chunk.choices[0]?.finish_reason
     if (fr) finishReason = fr
-    if (chunk.usage) outputTokens = chunk.usage.completion_tokens ?? outputTokens
+    if (chunk.usage) usage = chunk.usage
     if (!d) continue
 
     if (d.reasoning_content) {
@@ -22,51 +27,43 @@ export async function* toEventStream(
         reasoning = true
         yield { type: 'reasoning_start' }
       }
-      yield { type: 'reasoning_delta', reasoning: d.reasoning_content }
+      yield { type: 'reasoning_delta', text: d.reasoning_content, logprobs: lp?.reasoning_content ?? null }
     }
 
     if (d.content) {
-      if (!text) {
-        if (reasoning) { yield { type: 'reasoning_end' }; reasoning = false }
-        text = true
-        yield { type: 'content_start' }
+      if (!answer) {
+        if (reasoning) { yield { type: 'reasoning_end' } }
+        answer = true
+        yield { type: 'answer_start' }
       }
-      yield { type: 'content_delta', text: d.content }
+      yield { type: 'answer_delta', text: d.content, logprobs: lp?.content ?? null }
     }
 
     if (d.tool_calls?.length) {
       if (!tools) {
-        if (reasoning) { yield { type: 'reasoning_end' }; reasoning = false }
-        if (text) { yield { type: 'content_end' }; text = false }
+        if (reasoning && !answer) { yield { type: 'reasoning_end' } }
+        if (answer) { yield { type: 'answer_end' } }
         tools = true
         yield { type: 'tool_calls_start' }
       }
       for (const tc of d.tool_calls) {
         const ti = tc.index ?? 0
-        if (!toolStates.has(ti)) {
-          if (activeTool >= 0) yield { type: 'tool_call_end' }
-          activeTool = ti
-          toolStates.set(ti, { id: tc.id, name: tc.function?.name ?? '', sent: '' })
-          yield { type: 'tool_call_start', id: tc.id, name: tc.function?.name ?? '' }
+        if (!seenTools.has(ti)) {
+          seenTools.add(ti)
+          yield { type: 'tool_call_name', id: tc.id, name: tc.function?.name ?? '' }
         }
-        const ts = toolStates.get(ti)!
         const args = tc.function?.arguments ?? ''
-        if (args.length > ts.sent.length) {
-          const partial = args.slice(ts.sent.length)
-          ts.sent = args
-          yield { type: 'tool_call_delta', partial_json: partial }
+        if (args) {
+          yield { type: 'tool_call_argument', partial_json: args }
         }
       }
     }
   }
 
-  if (activeTool >= 0) yield { type: 'tool_call_end' }
-  if (tools) yield { type: 'tool_calls_stop' }
-  if (reasoning) yield { type: 'reasoning_end' }
-  if (text) yield { type: 'content_end' }
-
-  yield { type: 'message_delta', stop_reason: mapStop(finishReason ?? ''), output_tokens: outputTokens }
-  yield { type: 'message_stop' }
+  if (tools) yield { type: 'tool_calls_end' }
+  if (finishReason !== null) yield { type: 'finish_reason', stop_reason: mapStop(finishReason) }
+  if (usage) yield { type: 'usage', usage }
+  yield { type: 'message_end' }
 }
 
 function mapStop(r: string): string {

@@ -75,36 +75,34 @@ for await (const e of client.chat.stream.event({
       process.stdout.write('[推理] ')
       break
     case 'reasoning_delta':
-      process.stdout.write(e.reasoning)
+      process.stdout.write(e.text)
       break
     case 'reasoning_end':
       console.log('')
       break
-    case 'content_start':
+    case 'answer_start':
       process.stdout.write('[回复] ')
       break
-    case 'content_delta':
+    case 'answer_delta':
       process.stdout.write(e.text)
       break
-    case 'content_end':
+    case 'answer_end':
       console.log('')
       break
     case 'tool_calls_start':
       console.log('工具调用:')
       break
-    case 'tool_call_start':
+    case 'tool_call_name':
       console.log(`  ${e.name}(`)
       break
-    case 'tool_call_delta':
+    case 'tool_call_argument':
       process.stdout.write(e.partial_json)
       break
-    case 'tool_call_end':
+    case 'tool_calls_end':
       console.log(')')
-      break
-    case 'tool_calls_stop':
       console.log('结束')
       break
-    case 'message_delta':
+    case 'finish_reason':
       console.log(`stop_reason: ${e.stop_reason}`)
       break
   }
@@ -115,20 +113,20 @@ for await (const e of client.chat.stream.event({
 
 | 事件 | 说明 |
 |------|------|
-| `message_start` | 消息开始，含 id/model |
+| `message_start` | 消息开始，含 id/model/created/system_fingerprint |
 | `reasoning_start` | 推理开始 |
-| `reasoning_delta` | 推理增量，字段 `reasoning` |
+| `reasoning_delta` | 推理增量，字段 `text`，可选 `logprobs` |
 | `reasoning_end` | 推理结束 |
-| `content_start` | 正文开始 |
-| `content_delta` | 正文增量，字段 `text` |
-| `content_end` | 正文结束 |
+| `answer_start` | 正文开始 |
+| `answer_delta` | 正文增量，字段 `text`，可选 `logprobs` |
+| `answer_end` | 正文结束 |
 | `tool_calls_start` | 所有工具调用开始 |
-| `tool_call_start` | 单个工具调用开始，字段 `id`/`name` |
-| `tool_call_delta` | 工具参数 JSON 增量，字段 `partial_json` |
-| `tool_call_end` | 单个工具调用结束 |
-| `tool_calls_stop` | 所有工具调用结束 |
-| `message_delta` | 停止原因和输出 token 数 |
-| `message_stop` | 消息结束 |
+| `tool_call_name` | 单个工具调用开始，字段 `id`/`name` |
+| `tool_call_argument` | 工具参数 JSON 增量，字段 `partial_json` |
+| `tool_calls_end` | 所有工具调用结束 |
+| `finish_reason` | 停止原因 |
+| `usage` | 用量统计，字段 `usage`（完整 Usage 对象） |
+| `message_end` | 消息结束 |
 
 ## Thinking Mode
 

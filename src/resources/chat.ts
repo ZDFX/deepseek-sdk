@@ -32,7 +32,7 @@ export class ChatStream {
     yield* this.client.postStream<ChatCompletionChunk>(path, body)
   }
 
-  /** 结构化事件格式：按 event.type 分发处理（message_start → content_block_start/delta/stop → message_delta → message_stop） */
+  /** 结构化事件格式：按 event.type 分发处理（message_start → reasoning → answer → tool_calls → finish_reason/usage → message_end） */
   async *event(request: ChatCompletionRequest): AsyncGenerator<StreamEvent> {
     const messages = preprocessMessages(request.messages, request.thinking)
     const body = { ...request, messages, stream: true }

@@ -17,22 +17,25 @@ for await (const e of client.chat.stream.event({
       process.stdout.write('[推理] ')
       break
     case 'reasoning_delta':
-      process.stdout.write(e.reasoning)
+      process.stdout.write(e.text)
       break
     case 'reasoning_end':
       console.log('\n[/推理]')
       break
-    case 'content_start':
+    case 'answer_start':
       process.stdout.write('[回复] ')
       break
-    case 'content_delta':
+    case 'answer_delta':
       process.stdout.write(e.text)
       break
-    case 'content_end':
+    case 'answer_end':
       console.log('\n[/回复]')
       break
-    case 'message_delta':
-      console.log(`stop: ${e.stop_reason}  tokens: ${e.output_tokens}`)
+    case 'finish_reason':
+      process.stdout.write(`stop: ${e.stop_reason}  `)
+      break
+    case 'usage':
+      console.log(`tokens: ${e.usage.completion_tokens} (prompt: ${e.usage.prompt_tokens}, total: ${e.usage.total_tokens})`)
       break
   }
 }
