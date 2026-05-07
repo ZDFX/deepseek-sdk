@@ -1,4 +1,7 @@
-// 共享类型 —— Logprobs、Usage、StreamOptions 等
+// 共享类型 —— Logprobs、Usage、StreamOptions、ModelName 等
+
+/** 支持的模型 ID */
+export type ModelName = 'deepseek-v4-flash' | 'deepseek-v4-pro'
 
 export interface LogProbToken {
   /** 输出的 token */

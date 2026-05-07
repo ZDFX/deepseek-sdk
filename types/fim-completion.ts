@@ -1,12 +1,12 @@
-import type { StreamOptions, Usage, Stop } from './common'
+import type { StreamOptions, Usage, Stop, ModelName } from './common'
 
 // ============================================================
 // Request
 // ============================================================
 
 export interface FIMCompletionRequest {
-  /** 模型的 ID，仅支持 `deepseek-v4-pro` */
-  model: 'deepseek-v4-pro'
+  /** 模型的 ID */
+  model: ModelName
   /** 用于生成完成内容的提示 */
   prompt: string
   /** 为 `true` 时在输出中回显 prompt 内容 */

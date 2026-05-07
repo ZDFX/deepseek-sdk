@@ -1,4 +1,4 @@
-import type { LogProbContent, StreamOptions, Usage, Stop } from './common'
+import type { LogProbContent, StreamOptions, Usage, Stop, ModelName } from './common'
 
 // ============================================================
 // Messages（请求体中的 messages 字段）
@@ -155,8 +155,8 @@ export interface ResponseFormat {
 type ChatCompletionRequestCommon = {
   /** 对话的消息列表，长度 >= 1 */
   messages: ChatMessage[]
-  /** 使用的模型 ID：`deepseek-v4-flash` 或 `deepseek-v4-pro` */
-  model: 'deepseek-v4-flash' | 'deepseek-v4-pro'
+  /** 使用的模型 ID */
+  model: ModelName
   /** 介于 -2.0 和 2.0 之间的数字。正值惩罚已出现 token 的频率，降低重复，默认 `0` */
   frequency_penalty?: number | null
   /** 限制生成 completion 的最大 token 数。输入+输出总长受上下文长度限制 */
