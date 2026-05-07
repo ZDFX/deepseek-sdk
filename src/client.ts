@@ -52,7 +52,7 @@ export class DeepSeekClient {
     return response.json() as Promise<T>
   }
 
-  async *postStream<T>(path: string, body: unknown): AsyncGenerator<T> {
+  async *postStream<T>(path: string, body: unknown, signal?: AbortSignal): AsyncGenerator<T> {
     const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'POST',
       headers: {
@@ -61,6 +61,7 @@ export class DeepSeekClient {
         Accept: 'text/event-stream',
       },
       body: JSON.stringify(body),
+      ...(signal ? { signal } : {}),
     })
 
     if (!response.ok) {

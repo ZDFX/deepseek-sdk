@@ -25,20 +25,23 @@ export class ChatStream {
   constructor(private client: DeepSeekClient) {}
 
   /** DeepSeek 原生格式：逐 chunk 返回，与 API 原始响应一致 */
-  async *native(request: ChatCompletionRequest & { stream: true }): AsyncGenerator<ChatCompletionChunk> {
+  async *native(
+    request: ChatCompletionRequest & { stream: true },
+    signal?: AbortSignal
+  ): AsyncGenerator<ChatCompletionChunk> {
     const messages = preprocessMessages(request.messages, request.thinking)
     const body = { ...request, messages }
     const path = hasPrefix(request.messages) ? '/beta/chat/completions' : '/chat/completions'
-    yield* this.client.postStream<ChatCompletionChunk>(path, body)
+    yield* this.client.postStream<ChatCompletionChunk>(path, body, signal)
   }
 
   /** 结构化事件格式：按 event.type 分发处理（message_start → reasoning → answer → tool_calls → finish_reason/usage → message_end） */
-  async *event(request: ChatCompletionRequest): AsyncGenerator<StreamEvent> {
+  async *event(request: ChatCompletionRequest, signal?: AbortSignal): AsyncGenerator<StreamEvent> {
     const messages = preprocessMessages(request.messages, request.thinking)
     const body = { ...request, messages, stream: true }
     const path = hasPrefix(request.messages) ? '/beta/chat/completions' : '/chat/completions'
 
-    const chunks = this.client.postStream<ChatCompletionChunk>(path, body)
+    const chunks = this.client.postStream<ChatCompletionChunk>(path, body, signal)
     yield* toEventStream(chunks, request.model)
   }
 }
